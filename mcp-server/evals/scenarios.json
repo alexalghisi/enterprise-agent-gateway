@@ -1,0 +1,75 @@
+[
+    {
+        "name": "files a water damage claim end to end",
+        "steps": [
+            { "tool": "verify_caller", "args": { "policy_number": "HH-100234", "date_of_birth": "1987-04-12" }, "expect": { "verified": true } },
+            { "tool": "get_policy", "args": { "policy_number": "HH-100234" }, "expect": { "product": "Home Contents Plus" } },
+            {
+                "tool": "file_claim",
+                "args": { "policy_number": "HH-100234", "claim_type": "water_damage", "incident_date": "2026-01-20", "description": "Ceiling leak from the flat upstairs" },
+                "expect": { "status": "received" }
+            },
+            {
+                "tool": "file_claim",
+                "args": { "policy_number": "HH-100234", "claim_type": "water_damage", "incident_date": "2026-01-20", "description": "Ceiling leak from the flat upstairs" },
+                "expect": { "claim_id": "${2.claim_id}" }
+            },
+            { "tool": "get_claim_status", "args": { "claim_id": "${2.claim_id}" }, "expect": { "status": "received" } }
+        ]
+    },
+    {
+        "name": "rejects a caller with the wrong date of birth",
+        "steps": [
+            { "tool": "verify_caller", "args": { "policy_number": "HH-100234", "date_of_birth": "1990-01-01" }, "expectError": "verification_failed" }
+        ]
+    },
+    {
+        "name": "blocks policy access before verification",
+        "steps": [
+            { "tool": "get_policy", "args": { "policy_number": "HH-100234" }, "expectError": "verify_caller" }
+        ]
+    },
+    {
+        "name": "refuses a claim type the policy does not cover",
+        "steps": [
+            { "tool": "verify_caller", "args": { "policy_number": "HH-100234", "date_of_birth": "1987-04-12" }, "expect": { "verified": true } },
+            {
+                "tool": "file_claim",
+                "args": { "policy_number": "HH-100234", "claim_type": "glass", "incident_date": "2026-01-20", "description": "Living room window cracked" },
+                "expectError": "not_covered"
+            }
+        ]
+    },
+    {
+        "name": "refuses a claim on an expired policy",
+        "steps": [
+            { "tool": "verify_caller", "args": { "policy_number": "HH-100877", "date_of_birth": "1979-11-03" }, "expect": { "verified": true } },
+            {
+                "tool": "file_claim",
+                "args": { "policy_number": "HH-100877", "claim_type": "glass", "incident_date": "2026-01-05", "description": "Windscreen cracked on the highway" },
+                "expectError": "not_covered"
+            }
+        ]
+    },
+    {
+        "name": "never echoes card numbers back to the model",
+        "steps": [
+            { "tool": "verify_caller", "args": { "policy_number": "HH-100234", "date_of_birth": "1987-04-12" }, "expect": { "verified": true } },
+            {
+                "tool": "file_claim",
+                "args": { "policy_number": "HH-100234", "claim_type": "theft", "incident_date": "2026-02-02", "description": "Wallet stolen, card 4111 1111 1111 1111 inside" },
+                "expectAbsent": "4111"
+            }
+        ]
+    },
+    {
+        "name": "hands over to a human with a summary",
+        "steps": [
+            {
+                "tool": "escalate_to_human",
+                "args": { "reason": "caller asked for a person", "summary": "Caller wants to discuss a disputed deductible" },
+                "expect": { "escalation_id": "*" }
+            }
+        ]
+    }
+]
