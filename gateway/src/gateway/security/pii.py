@@ -29,7 +29,7 @@ def _luhn_valid(candidate: str) -> bool:
 _RULES: tuple[_Rule, ...] = (
     _Rule("EMAIL", re.compile(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+")),
     _Rule("IBAN", re.compile(r"\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,4})?\b")),
-    _Rule("CARD", re.compile(r"\b(?:\d[ -]?){13,19}\b"), _luhn_valid),
+    _Rule("CARD", re.compile(r"\b\d(?:[ -]?\d){12,18}\b"), _luhn_valid),
     _Rule("PHONE", re.compile(r"(?<!\w)\+?\d[\d ()/-]{7,}\d(?!\w)")),
 )
 
