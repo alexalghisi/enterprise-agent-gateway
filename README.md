@@ -1,7 +1,5 @@
 # enterprise-agent-gateway
 
-[![ci](https://github.com/alexalghisi/enterprise-agent-gateway/actions/workflows/ci.yml/badge.svg)](https://github.com/alexalghisi/enterprise-agent-gateway/actions/workflows/ci.yml)
-
 A voice or chat agent that sounds good in a demo still has to verify the caller, read the right policy, file a claim exactly once and never repeat a card number back to the model. This repository is the integration layer that makes that safe for an insurance contact center.
 
 ![Scenario evals running against MongoDB and Redis](docs/evals.gif)
